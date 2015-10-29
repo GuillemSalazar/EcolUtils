@@ -37,9 +37,10 @@ Guillem Salazar (salazar@icm.csic.es)
 
 ## Installation of the package
 
-* Install the latest version of **vegan** from Bioconductor:
+* Install the latest version of **vegan** and **spaa** from Bioconductor:
 ```r
 install.packages("vegan")
+install.packages("spaa")
 ```
 * Install EcolUtils' current development version from Github:
 ```r
