@@ -1,0 +1,9 @@
+Package: EcolUtils
+Title: Utilities for community ecology analysis
+Version: 0.1
+Authors@R: person("Guillem", "Salazar", email = "salazar@icm.csic.es", role = c("aut", "cre"))
+Date:2015
+Description: The package EcolUtils provides tools for community ecology analysis not present in up-to-date available packages. Designed with molecular 16S-derived data in mind.
+Depends: R (>= 3.2.1)
+License:
+LazyData: true
