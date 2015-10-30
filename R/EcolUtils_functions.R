@@ -27,6 +27,7 @@ NULL
 #' @export
 #' @author Guillem Salazar <salazar@@icm.csic.es>
 #' @examples
+#' library(vegan)
 #' data(varespec)
 #' rrarefy.perm(varespec*100)
 
@@ -54,6 +55,7 @@ rrarefy.perm<-function(x,sample,n=100,round.out=T){
 #' @export
 #' @author Guillem Salazar <salazar@@icm.csic.es>
 #' @examples
+#' library(vegan)
 #' data(dune)
 #' data(dune.env)
 #' adonis.pair(vegdist(dune),dune.env$Management)
