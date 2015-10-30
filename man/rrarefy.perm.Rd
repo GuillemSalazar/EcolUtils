@@ -4,12 +4,12 @@
 \alias{rrarefy.perm}
 \title{Rarefaction of a community matrix with permutations}
 \usage{
-rrarefy.perm(x, sample, n = 100, round.out = T)
+rrarefy.perm(x, sample = min(rowSums(x)), n = 100, round.out = T)
 }
 \arguments{
 \item{x}{Community data, a matrix-like object.}
 
-\item{sample}{Subsample size.}
+\item{sample}{Subsample size (\code{min(rowSums(x))} as default)}
 
 \item{n}{Number of independent rarefactions.}
 

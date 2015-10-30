@@ -16,7 +16,7 @@ NULL
 #'
 #' This function generates one randomly rarefied community data frame through \code{n} repeated independent rarefactions.
 #' @param x Community data, a matrix-like object.
-#' @param sample Subsample size.
+#' @param sample Subsample size (\code{min(rowSums(x))} as default)
 #' @param n Number of independent rarefactions.
 #' @param round.out logical; should output be rounded.
 #' @details
@@ -31,12 +31,12 @@ NULL
 #' data(varespec)
 #' rrarefy.perm(varespec*100)
 
-rrarefy.perm<-function(x,sample,n=100,round.out=T){
+rrarefy.perm<-function(x,sample=min(rowSums(x)),n=100,round.out=T){
   require(vegan)
-  y<-rrarefy(x,min(rowSums(x)))
+  y<-rrarefy(x,sample)
   for (i in 2:n){
     cat("Permutation ",i," out of ",n,"\n")
-    y<-y+rrarefy(x,min(rowSums(x)))	
+    y<-y+rrarefy(x,sample)	
   }
   if (round.out==T) y<-round(y/n)
   if (round.out==F) y<-y/n
