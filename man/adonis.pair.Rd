@@ -25,6 +25,7 @@ Pairwise comparisons for all pairs of levels of a factor by using for Permutatio
 Basically the \code{adonis.pair} function applies the \code{adonis} function from \pkg{vegan} to all pairs of levels of a factor. P-values are then corrected with \code{p.adjust}.
 }
 \examples{
+library(vegan)
 data(dune)
 data(dune.env)
 adonis.pair(vegdist(dune),dune.env$Management)

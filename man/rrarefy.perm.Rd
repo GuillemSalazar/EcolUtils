@@ -26,6 +26,7 @@ Function \code{rrarefy.perm} generates one randomly rarefied community data fram
 The average value for each cell may (or may not) be rounded by using \code{round.out} parameter.
 }
 \examples{
+library(vegan)
 data(varespec)
 rrarefy.perm(varespec*100)
 }
