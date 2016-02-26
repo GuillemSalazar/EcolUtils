@@ -10,7 +10,7 @@ spec.gen(comm.tab, niche.width.method = "levins", perm.method = "quasiswap",
 \arguments{
 \item{comm.tab}{Community data, a matrix-like object (samples as rows; OTUs as columns).}
 
-\item{niche.width.method}{Niche width index (from \code{niche.width} in \pkg{spaa}): \code{levins} (default) or \code{shannon}}
+\item{niche.width.method}{Niche width index (from \code{niche.width} in \pkg{spaa}): \code{levins} (default) or \code{shannon}. Or simply the \code{occurrence}: the number of samples where an OTU occurs.}
 
 \item{perm.method}{Method for null model construction (from \code{permatswap} in \pkg{vegan}). Currently, only \code{quasiswap} (default) has been thoroughly tested.}
 
@@ -22,7 +22,7 @@ spec.gen(comm.tab, niche.width.method = "levins", perm.method = "quasiswap",
 Data frame with the observed niche width value, the mean and CI null values and the classification of each OTU.
 }
 \description{
-Classification of OTUs in generalists / specialists / non-significant based on the deviation of niche width indexes (\code{shanon} or \code{levins}) from null values computed with permutation algorithms for community matrices.
+Classification of OTUs in generalists / specialists / non-significant based on the deviation of niche width indexes (\code{shanon}, \code{levins} or \code{occurrence}) from null values computed with permutation algorithms for community matrices.
 }
 \details{
 Basically the \code{spec.gen} function computes a niche width index for each OTU in the \code{comm.tab}. The mean index value and CI for each OTU is computed for \code{n} null matrices created through permutation algorithms. Each OTU is classified as specialist / generalist / non significant if the real value is lower / higher / within the CI.
