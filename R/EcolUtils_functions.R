@@ -73,9 +73,9 @@ adonis.pair<-function(dist.mat,Factor,nper=1000,corr.method="fdr"){
 
 #' Specialist/Generalist classification of OTUs based on niche width and permutation algorithms
 #'
-#' Classification of OTUs in generalists / specialists / non-significant based on the deviation of niche width indexes (\code{shanon} or \code{levins}) from null values computed with permutation algorithms for community matrices.
+#' Classification of OTUs in generalists / specialists / non-significant based on the deviation of niche width indexes (\code{shanon}, \code{levins} or \code{occurrence}) from null values computed with permutation algorithms for community matrices.
 #' @param comm.tab Community data, a matrix-like object (samples as rows; OTUs as columns).
-#' @param niche.width.method Niche width index (from \code{niche.width} in \pkg{spaa}): \code{levins} (default) or \code{shannon}
+#' @param niche.width.method Niche width index (from \code{niche.width} in \pkg{spaa}): \code{levins} (default) or \code{shannon}. Or simply the \code{occurrence}: the number of samples where an OTU occurs.
 #' @param n Number of permutations.
 #' @param  perm.method Method for null model construction (from \code{permatswap} in \pkg{vegan}). Currently, only \code{quasiswap} (default) has been thoroughly tested.
 #' @param  probs Probabilities for confidence interval calculations.
@@ -99,13 +99,14 @@ adonis.pair<-function(dist.mat,Factor,nper=1000,corr.method="fdr"){
 spec.gen<-function(comm.tab,niche.width.method="levins",perm.method="quasiswap",n=1000,probs=c(0.025,0.975)){
   require(spaa)
   require(vegan)
+  occurrence<-function(x){apply(ceiling(x/max(x)),2,sum)}
   n<-n
-  levin.index.real<-as.numeric(niche.width(comm.tab,method=niche.width.method))
+  if (niche.width.method=="occurrence") levin.index.real<-occurrence(comm.tab) else levin.index.real<-as.numeric(niche.width(comm.tab,method=niche.width.method))
   names(levin.index.real)<-colnames(comm.tab)
   
   levin.index.simul<-matrix(NA,ncol=dim(comm.tab)[2],nrow=n)
   for (i in 1:n){
-    levin.index.simul[i,]<-as.numeric(niche.width(permatswap(comm.tab,perm.method,times=1)$perm,method=niche.width.method))
+    if (niche.width.method=="occurrence") levin.index.simul[i,]<-occurrence(permatswap(comm.tab,perm.method,times=1)$perm[[1]]) else levin.index.simul[i,]<-as.numeric(niche.width(permatswap(comm.tab,perm.method,times=1)$perm,method=niche.width.method))
   }
   colnames(levin.index.simul)<-colnames(comm.tab)
   levin.index.simul<-as.data.frame(levin.index.simul)
