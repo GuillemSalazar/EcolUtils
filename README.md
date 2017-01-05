@@ -14,6 +14,8 @@ Rarefaction of a community matrix with permutations
 Pairwise comparisons for Permutational Multivariate Analysis of Variance Using Distance Matrices
 + **spec.gen()**
 Specialist/Generalist classification of OTUs based on niche width and permutation algorithms
++ **seasonality.test()**
+Seasonality test based on autocorrelation and null communities
 
 ##Authors
 

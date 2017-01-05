@@ -120,3 +120,60 @@ spec.gen<-function(comm.tab,niche.width.method="levins",perm.method="quasiswap",
   }
   resultats$sign<-as.factor(resultats$sign)
   resultats}
+
+#' Seasonality test based on autocorrelation and null communities
+#'
+#' Classification of OTU's seasonality based on the sum of their auto-correaltion function and on null community matrices.
+#' @param comm.tab Community data, a matrix-like object (samples as rows; OTUs as columns).
+#' @param n Number of permutations.
+#' @param  probs Probabilities for confidence interval calculations.
+#' @param lag.max Maximum lag at which to calculate the acf. See the \code{acf} function.
+#' @details Basically the \code{seasonality.test} function computes the auto-correlation function (acf) for each OTU in the \code{comm.tab} through the \code{acf} function in the \pkg{stats} package. The sum of the absolute values of the acf is computed as the seasonality index for each OTU.
+#' This seasonality index and CI for each OTU is also computed for \code{n} null community matrices. The null matrices are created by randomly shuffling the rows in \code{comm.tab}.  Each OTU is classified depending whether the real seasonality index is lower / higher / within the CI.
+#' @keywords EcolUtils
+#' @return Data frame with the observed seasonality index, the mean and CI null values and the classification of each OTU.
+#' @export
+#' @author Guillem Salazar <salazar@@icm.csic.es>
+#' @examples
+#' library(RCurl)
+#' x<-getURL("https://raw.githubusercontent.com/GuillemSalazar/MolEcol_2015/master/OTUtable_Salazar_etal_2015_Molecol.txt")
+#' comm.tab<-read.table(text=x,sep="\t",row.names=1,header=TRUE,comment.char="@@")
+#' comm.tab<-t(comm.tab[,1:60])
+#' comm.tab<-comm.tab[,which(colSums(comm.tab)>0)]
+#' res<-seasonality.test(comm.tab,n=10)
+
+seasonality.test<-function(comm.tab,n=1000,probs=c(0.025, 0.975),lag.max=120,na.action=na.pass) 
+{
+  require(vegan)
+  
+  season.index<-function(x){
+    acf.all<-apply(as.matrix(x),2,acf,plot=F,lag.max=lag.max,na.action=na.pass)
+    acf.all<-sapply(acf.all,"[[",1)
+    apply(acf.all,2,function(x) sum(abs(x)))
+  }
+  
+  n<-n
+  season.index.real<-season.index(comm.tab)
+  
+  names(season.index.real) <- colnames(comm.tab)
+  season.index.simul<-matrix(NA, ncol = dim(comm.tab)[2],nrow = n)
+  for (i in 1:n) {
+    season.index.simul[i, ]<-season.index(comm.tab[sample(1:nrow(comm.tab)),])
+  }
+  colnames(season.index.simul) <- colnames(comm.tab)
+  season.index.simul <- as.data.frame(season.index.simul)
+  media <- apply(season.index.simul, 2, mean)
+  ci <- apply(season.index.simul, 2, quantile, probs = probs)
+  resultats <- data.frame(observed = season.index.real, mean.simulated = media,lowCI = ci[1, ], uppCI = ci[2, ], sign = NA)
+  for (j in 1:dim(resultats)[1]) {
+    if (resultats$observed[j] > resultats$uppCI[j]) 
+      resultats$sign[j] <- "SIGNIFICANTLY HIGHER"
+    if (resultats$observed[j] < resultats$lowCI[j]) 
+      resultats$sign[j] <- "SIGNIFICANTLY LOWER"
+    if (resultats$observed[j] >= resultats$lowCI[j] & resultats$observed[j] <= 
+        resultats$uppCI[j]) 
+      resultats$sign[j] <- "NON SIGNIFICANT"
+  }
+  resultats$sign <- as.factor(resultats$sign)
+  resultats
+}
