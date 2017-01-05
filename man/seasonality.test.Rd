@@ -8,7 +8,7 @@ seasonality.test(comm.tab, n = 1000, probs = c(0.025, 0.975),
   lag.max = 120, na.action = na.pass)
 }
 \arguments{
-\item{comm.tab}{Community data, a matrix-like object (samples as rows; OTUs as columns).}
+\item{comm.tab}{Community data, a matrix-like object (samples as rows; OTUs as columns). Samples should be ordered and representing a time series.}
 
 \item{n}{Number of permutations.}
 
@@ -28,6 +28,7 @@ This seasonality index and CI for each OTU is also computed for \code{n} null co
 }
 \examples{
 library(RCurl)
+# It runs but makes no ecological sense as data does not represent a time-series
 x<-getURL("https://raw.githubusercontent.com/GuillemSalazar/MolEcol_2015/master/OTUtable_Salazar_etal_2015_Molecol.txt")
 comm.tab<-read.table(text=x,sep="\\t",row.names=1,header=TRUE,comment.char="@")
 comm.tab<-t(comm.tab[,1:60])
