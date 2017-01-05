@@ -124,7 +124,7 @@ spec.gen<-function(comm.tab,niche.width.method="levins",perm.method="quasiswap",
 #' Seasonality test based on autocorrelation and null communities
 #'
 #' Classification of OTU's seasonality based on the sum of their auto-correaltion function and on null community matrices.
-#' @param comm.tab Community data, a matrix-like object (samples as rows; OTUs as columns).
+#' @param comm.tab Community data, a matrix-like object (samples as rows; OTUs as columns). Samples should be ordered and representing a time series.
 #' @param n Number of permutations.
 #' @param  probs Probabilities for confidence interval calculations.
 #' @param lag.max Maximum lag at which to calculate the acf. See the \code{acf} function.
@@ -136,6 +136,7 @@ spec.gen<-function(comm.tab,niche.width.method="levins",perm.method="quasiswap",
 #' @author Guillem Salazar <salazar@@icm.csic.es>
 #' @examples
 #' library(RCurl)
+#' # It runs but makes no ecological sense as data does not represent a time-series
 #' x<-getURL("https://raw.githubusercontent.com/GuillemSalazar/MolEcol_2015/master/OTUtable_Salazar_etal_2015_Molecol.txt")
 #' comm.tab<-read.table(text=x,sep="\t",row.names=1,header=TRUE,comment.char="@@")
 #' comm.tab<-t(comm.tab[,1:60])
