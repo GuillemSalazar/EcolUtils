@@ -34,4 +34,3 @@ rrarefy.perm(varespec*100)
 Guillem Salazar <salazar@icm.csic.es>
 }
 \keyword{EcolUtils}
-

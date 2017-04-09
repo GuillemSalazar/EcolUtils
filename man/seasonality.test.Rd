@@ -39,4 +39,3 @@ res<-seasonality.test(comm.tab,n=10)
 Guillem Salazar <salazar@icm.csic.es>
 }
 \keyword{EcolUtils}
-

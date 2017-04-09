@@ -178,3 +178,37 @@ seasonality.test<-function(comm.tab,n=1000,probs=c(0.025, 0.975),lag.max=120,na.
   resultats$sign <- as.factor(resultats$sign)
   resultats
 }
+
+#' Niche value computation for OTUs in a community through abundance-weighted mean and matrix randomization.
+#'
+#' Computation of the abundance-weighted mean of an environmental variable for all OTUs in a community and statistical comparison to randomized communities.
+#' @param comm.tab Community data, a matrix-like object (samples as rows; OTUs as columns).
+#' @param env.var Environmental variable as a numeric vector.
+#' @param n Number of permutations.
+#' @param  probs Probabilities for confidence interval calculations.
+#' @details The \code{niche.val} function computes the abundance-weighted mean of an environmental variable for each OTU in the \code{comm.tab}. The mean value and CI for each OTU is computed for \code{n} null matrices. The null matrices are created by randomly shuffling the rows in \code{comm.tab}.  Each OTU is classified depending whether the real niche value is lower / higher / within the CI.
+#' @keywords EcolUtils
+#' @return Data frame with the observed niche value, the mean and CI null values and the classification of each OTU based on randomizations.
+#' @export
+#' @author Guillem Salazar <salazar@@icm.csic.es>
+
+niche.val<-function(comm.tab,env.var,n=1000,probs=c(0.025,0.975)){
+  require(vegan)
+  stat.real<-apply(comm.tab,2,function (x) {weighted.mean(env.var,x,na.rm=T)})
+  stat.simul<-matrix(NA,ncol=dim(comm.tab)[2],nrow=n)
+  for (i in 1:n){
+    stat.simul[i,]<-apply(comm.tab[sample(1:nrow(comm.tab)),],2,function (x) {weighted.mean(env.var,x,na.rm=T)})
+  }
+  colnames(stat.simul)<-colnames(comm.tab)
+  simul<-as.data.frame(stat.simul)
+  media<-apply(stat.simul,2,mean,na.rm=T)
+  ci<-apply(stat.simul,2,quantile,probs=c(0.025,0.975),na.rm=T)
+  resultats<-data.frame(observed=stat.real,mean.simulated=media,lowCI=ci[1,],uppCI=ci[2,],sign=NA)
+  for (j in 1:dim(resultats)[1]){
+    if (resultats$observed[j]>resultats$uppCI[j]) resultats$sign[j]<-"HIGHER"
+    if (resultats$observed[j]<resultats$lowCI[j]) resultats$sign[j]<-"LOWER"
+    if (resultats$observed[j]>=resultats$lowCI[j] & resultats$observed[j]<=resultats$uppCI[j]) resultats$sign[j]<-"NON SIGNIFICANT"
+  }
+  resultats$sign<-as.factor(resultats$sign)
+  resultats
+}

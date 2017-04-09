@@ -16,4 +16,3 @@ To see the preferable citation of the package, type \code{citation("EcolUtils")}
 \author{
 Guillem Salazar <salazar@icm.csic.es>
 }
-

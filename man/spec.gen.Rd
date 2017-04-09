@@ -43,4 +43,3 @@ legend("bottomright",levels(res$sign),col=1:3,pch=19,inset=0.01,cex=0.7)
 Guillem Salazar <salazar@icm.csic.es>
 }
 \keyword{EcolUtils}
-
