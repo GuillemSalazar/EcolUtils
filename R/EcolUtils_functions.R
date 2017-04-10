@@ -197,6 +197,7 @@ niche.val<-function(comm.tab,env.var,n=1000,probs=c(0.025,0.975)){
   stat.real<-apply(comm.tab,2,function (x) {weighted.mean(env.var,x,na.rm=T)})
   stat.simul<-matrix(NA,ncol=dim(comm.tab)[2],nrow=n)
   for (i in 1:n){
+    print(paste("Rarefaction",i))
     stat.simul[i,]<-apply(comm.tab[sample(1:nrow(comm.tab)),],2,function (x) {weighted.mean(env.var,x,na.rm=T)})
   }
   colnames(stat.simul)<-colnames(comm.tab)
@@ -204,11 +205,12 @@ niche.val<-function(comm.tab,env.var,n=1000,probs=c(0.025,0.975)){
   media<-apply(stat.simul,2,mean,na.rm=T)
   ci<-apply(stat.simul,2,quantile,probs=c(0.025,0.975),na.rm=T)
   resultats<-data.frame(observed=stat.real,mean.simulated=media,lowCI=ci[1,],uppCI=ci[2,],sign=NA)
-  for (j in 1:dim(resultats)[1]){
-    if (resultats$observed[j]>resultats$uppCI[j]) resultats$sign[j]<-"HIGHER"
-    if (resultats$observed[j]<resultats$lowCI[j]) resultats$sign[j]<-"LOWER"
-    if (resultats$observed[j]>=resultats$lowCI[j] & resultats$observed[j]<=resultats$uppCI[j]) resultats$sign[j]<-"NON SIGNIFICANT"
-  }
-  resultats$sign<-as.factor(resultats$sign)
+  
+  classify.sign<-function (x){
+    if (x[1]>x[4]) "HIGHER"
+    else if (x[1]<x[3]) "LOWER"
+    else if (x[1]>=x[3] & x[1]<=x[4]) "NON SIGNIFICANT"}
+  
+  resultats$sign<-as.factor(apply(resultats,1,classify.sign))
   resultats
 }
