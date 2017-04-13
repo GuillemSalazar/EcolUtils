@@ -207,7 +207,8 @@ niche.val<-function(comm.tab,env.var,n=1000,probs=c(0.025,0.975)){
   resultats<-data.frame(observed=stat.real,mean.simulated=media,lowCI=ci[1,],uppCI=ci[2,],sign=NA)
   
   classify.sign<-function (x){
-    if (x[1]>x[4]) "HIGHER"
+    if (is.na(x[1])) NA
+    else if (x[1]>x[4]) "HIGHER"
     else if (x[1]<x[3]) "LOWER"
     else if (x[1]>=x[3] & x[1]<=x[4]) "NON SIGNIFICANT"}
   
