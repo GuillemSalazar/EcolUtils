@@ -16,7 +16,7 @@ adonis.pair(dist.mat, Factor, nper = 1000, corr.method = "fdr")
 \item{corr.method}{P-value's correction method (from \code{p.adjust}).}
 }
 \value{
-Data frame with the p-values and corrected p-values for each pairwise combination.
+Data frame with the R2, p-values and corrected p-values for each pairwise combination.
 }
 \description{
 Pairwise comparisons for all pairs of levels of a factor by using for Permutational MANOVA.

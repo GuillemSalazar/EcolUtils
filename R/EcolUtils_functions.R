@@ -51,7 +51,7 @@ rrarefy.perm<-function(x,sample=min(rowSums(x)),n=100,round.out=T){
 #' @param corr.method P-value's correction method (from \code{p.adjust}).
 #' @details Basically the \code{adonis.pair} function applies the \code{adonis} function from \pkg{vegan} to all pairs of levels of a factor. P-values are then corrected with \code{p.adjust}.
 #' @keywords EcolUtils
-#' @return Data frame with the p-values and corrected p-values for each pairwise combination.
+#' @return Data frame with the R2, p-values and corrected p-values for each pairwise combination.
 #' @export
 #' @author Guillem Salazar <salazar@@icm.csic.es>
 #' @examples
@@ -65,11 +65,13 @@ adonis.pair<-function(dist.mat,Factor,nper=1000,corr.method="fdr"){
   as.factor(Factor)
   comb.fact<-combn(levels(Factor),2)
   pv<-NULL
+  R2<-NULL
   for (i in 1:dim(comb.fact)[2]){
     model.temp<-adonis(as.dist(as.matrix(dist.mat)[Factor==comb.fact[1,i] | Factor==comb.fact[2,i],Factor==comb.fact[1,i] | Factor==comb.fact[2,i]])~Factor[Factor==comb.fact[1,i] | Factor==comb.fact[2,i]],permutations=nper)
-    pv<-c(pv,model.temp$aov.tab[[6]][1])}
+    pv<-c(pv,model.temp$aov.tab[[6]][1])
+    R2<-c(R2,model.temp$aov.tab$R2[1])}
   pv.corr<-p.adjust(pv,method=corr.method)
-  data.frame(combination=paste(comb.fact[1,],comb.fact[2,],sep=" <-> "),P.value=pv,P.value.corrected=pv.corr)}
+  data.frame(combination=paste(comb.fact[1,],comb.fact[2,],sep=" <-> "),R2=R2,P.value=pv,P.value.corrected=pv.corr)}
 
 #' Specialist/Generalist classification of OTUs based on niche width and permutation algorithms
 #'
