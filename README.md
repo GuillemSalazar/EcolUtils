@@ -18,6 +18,8 @@ Specialist/Generalist classification of OTUs based on niche width and permutatio
 Seasonality test based on autocorrelation and null communities
 + **niche.val()**
 Niche value computation for OTUs in a community through abundance-weighted mean and matrix randomization
++ **niche.range()**
+Niche range computation for OTUs in a community through abundance-weighted mean and matrix randomization
 
 ## Authors
 
