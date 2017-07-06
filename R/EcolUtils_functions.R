@@ -217,3 +217,51 @@ niche.val<-function(comm.tab,env.var,n=1000,probs=c(0.025,0.975)){
   resultats$sign<-as.factor(apply(resultats,1,classify.sign))
   resultats
 }
+
+#' Niche range computation for OTUs in a community through matrix randomization.
+#'
+#' Computation of the range of an environmental variable for all OTUs in a community and statistical comparison to randomized communities.
+#' @param comm.tab Community data, a matrix-like object (samples as rows; OTUs as columns).
+#' @param env.var Environmental variable as a numeric vector.
+#' @param n Number of permutations.
+#' @param  probs Probabilities for confidence interval calculations.
+#' @details The \code{niche.val} function computes the range of values of an environmental variable where each OTU is present. The mean value and CI for each OTU is computed for \code{n} null matrices. The null matrices are created by randomly shuffling the rows in \code{comm.tab}.  Each OTU is classified depending whether the real niche range is lower / higher / within the CI.
+#' @keywords EcolUtils
+#' @return Data frame with the observed niche range value, the mean and CI null values and the classification of each OTU based on randomizations.
+#' @export
+#' @author Guillem Salazar <salazar@@icm.csic.es>
+
+niche.range<-function (comm.tab, env.var, n = 1000, probs = c(0.025, 0.975)) 
+{
+  require(vegan)
+  stat.real <- apply(comm.tab, 2, function(x) {
+    abs(range(env.var[which(x>0)],na.rm=T)[1]-range(env.var[which(x>0)],na.rm=T)[2])
+  })
+  stat.simul <- matrix(NA, ncol = dim(comm.tab)[2], nrow = n)
+  for (i in 1:n) {
+    print(paste("Rarefaction", i))
+    stat.simul[i, ] <- apply(comm.tab[sample(1:nrow(comm.tab)), 
+                                      ], 2, function(x) {
+                                        abs(range(env.var[which(x>0)],na.rm=T)[1]-range(env.var[which(x>0)],na.rm=T)[2])
+                                      })
+  }
+  colnames(stat.simul) <- colnames(comm.tab)
+  simul <- as.data.frame(stat.simul)
+  media <- apply(stat.simul, 2, mean, na.rm = T)
+  ci <- apply(stat.simul, 2, quantile, probs = c(0.025, 0.975), 
+              na.rm = T)
+  resultats <- data.frame(observed = stat.real, mean.simulated = media, 
+                          lowCI = ci[1, ], uppCI = ci[2, ], sign = NA)
+  classify.sign <- function(x) {
+    if (is.na(x[1])) 
+      NA
+    else if (x[1] > x[4]) 
+      "HIGHER"
+    else if (x[1] < x[3]) 
+      "LOWER"
+    else if (x[1] >= x[3] & x[1] <= x[4]) 
+      "NON SIGNIFICANT"
+  }
+  resultats$sign <- as.factor(apply(resultats, 1, classify.sign))
+  resultats
+}
