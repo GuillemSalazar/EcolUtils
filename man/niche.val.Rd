@@ -25,6 +25,6 @@ Computation of the abundance-weighted mean of an environmental variable for all 
 The \code{niche.val} function computes the abundance-weighted mean of an environmental variable for each OTU in the \code{comm.tab}. The mean value and CI for each OTU is computed for \code{n} null matrices. The null matrices are created by randomly shuffling the rows in \code{comm.tab}.  Each OTU is classified depending whether the real niche value is lower / higher / within the CI.
 }
 \author{
-Guillem Salazar <salazar@icm.csic.es>
+Guillem Salazar <guillems@ethz.ch>
 }
 \keyword{EcolUtils}

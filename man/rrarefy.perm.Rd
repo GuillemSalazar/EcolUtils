@@ -31,6 +31,6 @@ data(varespec)
 rrarefy.perm(varespec*100)
 }
 \author{
-Guillem Salazar <salazar@icm.csic.es>
+Guillem Salazar <guillems@ethz.ch>
 }
 \keyword{EcolUtils}

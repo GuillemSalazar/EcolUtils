@@ -14,5 +14,5 @@ The package \pkg{EcolUtils} depends on \pkg{vegan} which can be installed from C
 To see the preferable citation of the package, type \code{citation("EcolUtils")}.
 }
 \author{
-Guillem Salazar <salazar@icm.csic.es>
+Guillem Salazar <guillems@ethz.ch>
 }

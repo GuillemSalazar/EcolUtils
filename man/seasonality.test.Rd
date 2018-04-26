@@ -36,6 +36,6 @@ comm.tab<-comm.tab[,which(colSums(comm.tab)>0)]
 res<-seasonality.test(comm.tab,n=10)
 }
 \author{
-Guillem Salazar <salazar@icm.csic.es>
+Guillem Salazar <guillems@ethz.ch>
 }
 \keyword{EcolUtils}

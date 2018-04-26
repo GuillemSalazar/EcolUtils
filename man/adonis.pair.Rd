@@ -31,6 +31,6 @@ data(dune.env)
 adonis.pair(vegdist(dune),dune.env$Management)
 }
 \author{
-Guillem Salazar <salazar@icm.csic.es>
+Guillem Salazar <guillems@ethz.ch>
 }
 \keyword{EcolUtils}

@@ -40,6 +40,6 @@ plot(colSums(comm.tab),colSums(comm.tab.bin)/dim(comm.tab.bin)[1],col=res$sign,p
 legend("bottomright",levels(res$sign),col=1:3,pch=19,inset=0.01,cex=0.7)
 }
 \author{
-Guillem Salazar <salazar@icm.csic.es>
+Guillem Salazar <guillems@ethz.ch>
 }
 \keyword{EcolUtils}

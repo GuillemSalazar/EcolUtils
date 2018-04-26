@@ -25,6 +25,6 @@ Computation of the range of an environmental variable for all OTUs in a communit
 The \code{niche.val} function computes the range of values of an environmental variable where each OTU is present. The mean value and CI for each OTU is computed for \code{n} null matrices. The null matrices are created by randomly shuffling the rows in \code{comm.tab}.  Each OTU is classified depending whether the real niche range is lower / higher / within the CI.
 }
 \author{
-Guillem Salazar <salazar@icm.csic.es>
+Guillem Salazar <guillems@ethz.ch>
 }
 \keyword{EcolUtils}

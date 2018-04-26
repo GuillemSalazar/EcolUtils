@@ -7,7 +7,7 @@
 #' To see the preferable citation of the package, type \code{citation("EcolUtils")}.
 #'@docType package
 #'@name EcolUtils
-#'@author Guillem Salazar <salazar@@icm.csic.es>
+#'@author Guillem Salazar <guillems@@ethz.ch>
 
 NULL
 
@@ -25,7 +25,7 @@ NULL
 #' @keywords EcolUtils
 #' @return Rarefied community.
 #' @export
-#' @author Guillem Salazar <salazar@@icm.csic.es>
+#' @author Guillem Salazar <guillems@@ethz.ch>
 #' @examples
 #' library(vegan)
 #' data(varespec)
@@ -53,7 +53,7 @@ rrarefy.perm<-function(x,sample=min(rowSums(x)),n=100,round.out=T){
 #' @keywords EcolUtils
 #' @return Data frame with the R2, p-values and corrected p-values for each pairwise combination.
 #' @export
-#' @author Guillem Salazar <salazar@@icm.csic.es>
+#' @author Guillem Salazar <guillems@@ethz.ch>
 #' @examples
 #' library(vegan)
 #' data(dune)
@@ -85,7 +85,7 @@ adonis.pair<-function(dist.mat,Factor,nper=1000,corr.method="fdr"){
 #' @keywords EcolUtils
 #' @return Data frame with the observed niche width value, the mean and CI null values and the classification of each OTU.
 #' @export
-#' @author Guillem Salazar <salazar@@icm.csic.es>
+#' @author Guillem Salazar <guillems@@ethz.ch>
 #' @examples
 #' library(RCurl)
 #' x<-getURL("https://raw.githubusercontent.com/GuillemSalazar/MolEcol_2015/master/OTUtable_Salazar_etal_2015_Molecol.txt")
@@ -135,7 +135,7 @@ spec.gen<-function(comm.tab,niche.width.method="levins",perm.method="quasiswap",
 #' @keywords EcolUtils
 #' @return Data frame with the observed seasonality index, the mean and CI null values and the classification of each OTU.
 #' @export
-#' @author Guillem Salazar <salazar@@icm.csic.es>
+#' @author Guillem Salazar <guillems@@ethz.ch>
 #' @examples
 #' library(RCurl)
 #' # It runs but makes no ecological sense as data does not represent a time-series
@@ -192,7 +192,7 @@ seasonality.test<-function(comm.tab,n=1000,probs=c(0.025, 0.975),lag.max=120,na.
 #' @keywords EcolUtils
 #' @return Data frame with the observed niche value, the mean and CI null values and the classification of each OTU based on randomizations.
 #' @export
-#' @author Guillem Salazar <salazar@@icm.csic.es>
+#' @author Guillem Salazar <guillems@@ethz.ch>
 
 niche.val<-function(comm.tab,env.var,n=1000,probs=c(0.025,0.975)){
   require(vegan)
@@ -229,7 +229,7 @@ niche.val<-function(comm.tab,env.var,n=1000,probs=c(0.025,0.975)){
 #' @keywords EcolUtils
 #' @return Data frame with the observed niche range value, the mean and CI null values and the classification of each OTU based on randomizations.
 #' @export
-#' @author Guillem Salazar <salazar@@icm.csic.es>
+#' @author Guillem Salazar <guillems@@ethz.ch>
 
 niche.range<-function (comm.tab, env.var, n = 1000, probs = c(0.025, 0.975)) 
 {
@@ -264,4 +264,62 @@ niche.range<-function (comm.tab, env.var, n = 1000, probs = c(0.025, 0.975))
   }
   resultats$sign <- as.factor(apply(resultats, 1, classify.sign))
   resultats
+}
+
+#' Split moving-window distance analysis
+#'
+#' Split moving-window analysis based on multivariate community data and permutations.
+#' @param comm.dist.mat Dissimilarity matrix.
+#' @param env.var Vector representing a continuous environmental variable.
+#' @param w.size Windows size (has to be even).
+#' @param  probs Probabilities for confidence interval calculations.
+#' @param nrep Number of randomizations for significance computation.
+#' @details For each window the data is divided in two halves and the mean distance between samples belonging to a different half is divided by the mean distance between samples belonging to the same half. This is used as an statistic for which \code{nrep} null statistics are computed by resampling the order of the distance matrix and significance is computed. A z-score of the statistic is also provided.
+#' @keywords EcolUtils
+#' @return List containing: 1) data frame with the mean \code{env.var} value of the two central samples of the window, the min and max \code{env.var} values of the window, the statistic, its z-score and significance. 2) The mean and two quantiles of the null statistic based on the \code{probs}, all the null values and a window-to-sample map.
+#' @export
+#' @author Guillem Salazar <guillems@@ethz.ch>
+#' @examples
+#' library(vegan)
+#' data("varespec")
+#' data("varechem")
+#' tmp<-smwda(vegdist(varespec),varechem$N)
+#' plot(tmp$windows$env.var.mean,tmp$windows$stat.real.zscore,col=tmp$windows$sign,type="b",pch=19)
+
+smwda<-function(comm.dist.mat,env.var,w.size=10,nrep=1000,probs=c(0.025,0.975)){
+  comm.dist.mat<-as.matrix(comm.dist.mat)
+  starting.points<-1:(nrow(comm.dist.mat)-w.size)
+  if (w.size %% 2!=0) stop("Table needs to have an even number of samples (rows)")
+  if (nrow(comm.dist.mat)!=ncol(comm.dist.mat)) stop("comm.dist.mat needs to be a square matrix representing dissimilarity values between samples")
+  ordre<-order(env.var)
+  env.var<-env.var[ordre]
+  
+  dist.mat<-as.matrix(comm.dist.mat[ordre,ordre])
+  
+  fun<-function(start,dist.mat,w.size){
+    tmp<-dist.mat[start:(start+w.size-1),start:(start+w.size-1)]
+    diag(tmp)<-NA
+    tmp[upper.tri(tmp)]<-NA
+    mean(tmp[(1+w.size/2):w.size,1:(w.size/2)])/mean(c(tmp[1:(w.size/2),1:(w.size/2)],tmp[(1+w.size/2):w.size,(1+w.size/2):w.size]),na.rm = T)
+  }
+  
+  rnd.fun<-function(dist.mat,w.size){
+    rnd.pos<-sample(1:nrow(dist.mat),nrow(dist.mat),replace=F)
+    fun(1,dist.mat=dist.mat[rnd.pos,rnd.pos],w.size=w.size)
+  }
+  
+  stat.real<-sapply(starting.points,function(x){fun(x,dist.mat=dist.mat,w.size=w.size)})
+  stat.real.zscore<-scale(stat.real,center = T,scale = T)
+  stat.random<-replicate(nrep,rnd.fun(dist.mat,w.size))
+  env.var.mean<-sapply(starting.points,function(x){mean(env.var[c(x+w.size/2-1,x+w.size/2)])})
+  env.var.min<-sapply(starting.points,function(x){min(env.var[x:(x+w.size-1)])})
+  env.var.max<-sapply(starting.points,function(x){max(env.var[x:(x+w.size-1)])})
+  sign<-sapply(stat.real,function(x){if (x>quantile(stat.random,probs=probs[2]) | x<quantile(stat.random,probs=probs[1])) "sign" else "N.S"})
+  
+  window.sample.map<-sapply(starting.points,function(x){tmp<-rep(0,nrow(comm.dist.mat));tmp[x:(x+w.size-1)]<-1;t(tmp)})
+  rownames(window.sample.map)<-rownames(comm.dist.mat)
+  colnames(window.sample.map)<-paste("window",starting.points,sep="")
+  
+  list(windows=data.frame(env.var.mean,env.var.min,env.var.max,stat.real,stat.real.zscore,sign,row.names = paste("window",starting.points,sep="")),random.quantiles=quantile(stat.random,probs=probs),random.mean=mean(stat.random),random.values=stat.random,window.sample.map=t(window.sample.map))
+  
 }
