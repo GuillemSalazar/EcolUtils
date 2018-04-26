@@ -20,6 +20,8 @@ Seasonality test based on autocorrelation and null communities
 Niche value computation for OTUs in a community through abundance-weighted mean and matrix randomization
 + **niche.range()**
 Niche range computation for OTUs in a community through abundance-weighted mean and matrix randomization
++ **smwda()**
+Split moving-window distance analysis
 
 ## Authors
 
@@ -38,7 +40,7 @@ citation("EcolUtils")
 
 ## Contact Info
 
-Guillem Salazar (salazar@icm.csic.es)
+Guillem Salazar (guillems@ethz.ch)
 
 
 ## Installation of the package
