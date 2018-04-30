@@ -294,23 +294,23 @@ smwda<-function(comm.dist.mat,env.var,w.size=10,nrep=1000,probs=c(0.025,0.975)){
   ordre<-order(env.var)
   env.var<-env.var[ordre]
   
-  dist.mat<-as.matrix(comm.dist.mat[ordre,ordre])
+  comm.dist.mat<-as.matrix(comm.dist.mat[ordre,ordre])
   
-  fun<-function(start,dist.mat,w.size){
-    tmp<-dist.mat[start:(start+w.size-1),start:(start+w.size-1)]
+  fun<-function(start,comm.dist.mat,w.size){
+    tmp<-comm.dist.mat[start:(start+w.size-1),start:(start+w.size-1)]
     diag(tmp)<-NA
     tmp[upper.tri(tmp)]<-NA
     mean(tmp[(1+w.size/2):w.size,1:(w.size/2)])/mean(c(tmp[1:(w.size/2),1:(w.size/2)],tmp[(1+w.size/2):w.size,(1+w.size/2):w.size]),na.rm = T)
   }
   
-  rnd.fun<-function(dist.mat,w.size){
-    rnd.pos<-sample(1:nrow(dist.mat),nrow(dist.mat),replace=F)
-    fun(1,dist.mat=dist.mat[rnd.pos,rnd.pos],w.size=w.size)
+  rnd.fun<-function(comm.dist.mat,w.size){
+    rnd.pos<-sample(1:nrow(comm.dist.mat),nrow(comm.dist.mat),replace=F)
+    fun(1,comm.dist.mat=comm.dist.mat[rnd.pos,rnd.pos],w.size=w.size)
   }
   
-  stat.real<-sapply(starting.points,function(x){fun(x,dist.mat=dist.mat,w.size=w.size)})
+  stat.real<-sapply(starting.points,function(x){fun(x,comm.dist.mat=comm.dist.mat,w.size=w.size)})
   stat.real.zscore<-scale(stat.real,center = T,scale = T)
-  stat.random<-replicate(nrep,rnd.fun(dist.mat,w.size))
+  stat.random<-replicate(nrep,rnd.fun(comm.dist.mat,w.size))
   env.var.mean<-sapply(starting.points,function(x){mean(env.var[c(x+w.size/2-1,x+w.size/2)])})
   env.var.min<-sapply(starting.points,function(x){min(env.var[x:(x+w.size-1)])})
   env.var.max<-sapply(starting.points,function(x){max(env.var[x:(x+w.size-1)])})
