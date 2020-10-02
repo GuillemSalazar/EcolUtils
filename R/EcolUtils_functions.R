@@ -3,7 +3,7 @@
 #' The package \pkg{EcolUtils} provides tools for community ecology analysis not present in up-to-date available packages. Designed with molecular 16S-derived data in mind.
 #'
 #'@details The package \pkg{EcolUtils} depends on \pkg{vegan} which can be installed from CRAN.
-#' 
+#'
 #' To see the preferable citation of the package, type \code{citation("EcolUtils")}.
 #'@docType package
 #'@name EcolUtils
@@ -36,12 +36,12 @@ rrarefy.perm<-function(x,sample=min(rowSums(x)),n=100,round.out=T){
   y<-rrarefy(x,sample)
   for (i in 2:n){
     cat("Permutation ",i," out of ",n,"\n")
-    y<-y+rrarefy(x,sample)	
+    y<-y+rrarefy(x,sample)
   }
   if (round.out==T) y<-round(y/n)
   if (round.out==F) y<-y/n
   y}
-  
+
 #' Pairwise comparisons for Permutational Multivariate Analysis of Variance Using Distance Matrices
 #'
 #' Pairwise comparisons for all pairs of levels of a factor by using for Permutational MANOVA.
@@ -62,7 +62,6 @@ rrarefy.perm<-function(x,sample=min(rowSums(x)),n=100,round.out=T){
 
 adonis.pair<-function(dist.mat,Factor,nper=1000,corr.method="fdr"){
   require(vegan)
-  as.factor(Factor)
   comb.fact<-combn(levels(Factor),2)
   pv<-NULL
   R2<-NULL
@@ -100,7 +99,7 @@ adonis.pair<-function(dist.mat,Factor,nper=1000,corr.method="fdr"){
 #' comm.tab<-t(comm.tab[,1:60])
 #' comm.tab<-comm.tab[,which(colSums(comm.tab)>0)]
 #' res<-spec.gen(comm.tab,n=100)
-#' 
+#'
 #' comm.tab.bin<-ceiling(comm.tab/max(comm.tab))
 #' plot(colSums(comm.tab),colSums(comm.tab.bin)/dim(comm.tab.bin)[1],col=res$sign,pch=19,log="x",xlab="Abundance",ylab="Occurrence")
 #' legend("bottomright",levels(res$sign),col=1:3,pch=19,inset=0.01,cex=0.7)
@@ -112,7 +111,7 @@ spec.gen<-function(comm.tab,niche.width.method="levins",perm.method="quasiswap",
   n<-n
   if (niche.width.method=="occurrence") levin.index.real<-occurrence(comm.tab) else levin.index.real<-as.numeric(niche.width(comm.tab,method=niche.width.method))
   names(levin.index.real)<-colnames(comm.tab)
-  
+
   levin.index.simul<-matrix(NA,ncol=dim(comm.tab)[2],nrow=n)
   for (i in 1:n){
     if (niche.width.method=="occurrence") levin.index.simul[i,]<-occurrence(permatswap(comm.tab,perm.method,times=1)$perm[[1]]) else levin.index.simul[i,]<-as.numeric(niche.width(permatswap(comm.tab,perm.method,times=1)$perm,method=niche.width.method))
@@ -152,19 +151,19 @@ spec.gen<-function(comm.tab,niche.width.method="levins",perm.method="quasiswap",
 #' comm.tab<-comm.tab[,which(colSums(comm.tab)>0)]
 #' res<-seasonality.test(comm.tab,n=10)
 
-seasonality.test<-function(comm.tab,n=1000,probs=c(0.025, 0.975),lag.max=120,na.action=na.pass) 
+seasonality.test<-function(comm.tab,n=1000,probs=c(0.025, 0.975),lag.max=120,na.action=na.pass)
 {
   require(vegan)
-  
+
   season.index<-function(x){
     acf.all<-apply(as.matrix(x),2,acf,plot=F,lag.max=lag.max,na.action=na.pass)
     acf.all<-sapply(acf.all,"[[",1)
     apply(acf.all,2,function(x) sum(abs(x)))
   }
-  
+
   n<-n
   season.index.real<-season.index(comm.tab)
-  
+
   names(season.index.real) <- colnames(comm.tab)
   season.index.simul<-matrix(NA, ncol = dim(comm.tab)[2],nrow = n)
   for (i in 1:n) {
@@ -176,12 +175,12 @@ seasonality.test<-function(comm.tab,n=1000,probs=c(0.025, 0.975),lag.max=120,na.
   ci <- apply(season.index.simul, 2, quantile, probs = probs)
   resultats <- data.frame(observed = season.index.real, mean.simulated = media,lowCI = ci[1, ], uppCI = ci[2, ], sign = NA)
   for (j in 1:dim(resultats)[1]) {
-    if (resultats$observed[j] > resultats$uppCI[j]) 
+    if (resultats$observed[j] > resultats$uppCI[j])
       resultats$sign[j] <- "SIGNIFICANTLY HIGHER"
-    if (resultats$observed[j] < resultats$lowCI[j]) 
+    if (resultats$observed[j] < resultats$lowCI[j])
       resultats$sign[j] <- "SIGNIFICANTLY LOWER"
-    if (resultats$observed[j] >= resultats$lowCI[j] & resultats$observed[j] <= 
-        resultats$uppCI[j]) 
+    if (resultats$observed[j] >= resultats$lowCI[j] & resultats$observed[j] <=
+        resultats$uppCI[j])
       resultats$sign[j] <- "NON SIGNIFICANT"
   }
   resultats$sign <- as.factor(resultats$sign)
@@ -214,13 +213,13 @@ niche.val<-function(comm.tab,env.var,n=1000,probs=c(0.025,0.975)){
   media<-apply(stat.simul,2,mean,na.rm=T)
   ci<-apply(stat.simul,2,quantile,probs=c(0.025,0.975),na.rm=T)
   resultats<-data.frame(observed=stat.real,mean.simulated=media,lowCI=ci[1,],uppCI=ci[2,],sign=NA)
-  
+
   classify.sign<-function (x){
     if (is.na(x[1])) NA
     else if (x[1]>x[4]) "HIGHER"
     else if (x[1]<x[3]) "LOWER"
     else if (x[1]>=x[3] & x[1]<=x[4]) "NON SIGNIFICANT"}
-  
+
   resultats$sign<-as.factor(apply(resultats,1,classify.sign))
   resultats
 }
@@ -238,7 +237,7 @@ niche.val<-function(comm.tab,env.var,n=1000,probs=c(0.025,0.975)){
 #' @export
 #' @author Guillem Salazar <guillems@@ethz.ch>
 
-niche.range<-function (comm.tab, env.var, n = 1000, probs = c(0.025, 0.975)) 
+niche.range<-function (comm.tab, env.var, n = 1000, probs = c(0.025, 0.975))
 {
   require(vegan)
   stat.real <- apply(comm.tab, 2, function(x) {
@@ -247,7 +246,7 @@ niche.range<-function (comm.tab, env.var, n = 1000, probs = c(0.025, 0.975))
   stat.simul <- matrix(NA, ncol = dim(comm.tab)[2], nrow = n)
   for (i in 1:n) {
     print(paste("Rarefaction", i))
-    stat.simul[i, ] <- apply(comm.tab[sample(1:nrow(comm.tab)), 
+    stat.simul[i, ] <- apply(comm.tab[sample(1:nrow(comm.tab)),
                                       ], 2, function(x) {
                                         abs(range(env.var[which(x>0)],na.rm=T)[1]-range(env.var[which(x>0)],na.rm=T)[2])
                                       })
@@ -255,18 +254,18 @@ niche.range<-function (comm.tab, env.var, n = 1000, probs = c(0.025, 0.975))
   colnames(stat.simul) <- colnames(comm.tab)
   simul <- as.data.frame(stat.simul)
   media <- apply(stat.simul, 2, mean, na.rm = T)
-  ci <- apply(stat.simul, 2, quantile, probs = c(0.025, 0.975), 
+  ci <- apply(stat.simul, 2, quantile, probs = c(0.025, 0.975),
               na.rm = T)
-  resultats <- data.frame(observed = stat.real, mean.simulated = media, 
+  resultats <- data.frame(observed = stat.real, mean.simulated = media,
                           lowCI = ci[1, ], uppCI = ci[2, ], sign = NA)
   classify.sign <- function(x) {
-    if (is.na(x[1])) 
+    if (is.na(x[1]))
       NA
-    else if (x[1] > x[4]) 
+    else if (x[1] > x[4])
       "HIGHER"
-    else if (x[1] < x[3]) 
+    else if (x[1] < x[3])
       "LOWER"
-    else if (x[1] >= x[3] & x[1] <= x[4]) 
+    else if (x[1] >= x[3] & x[1] <= x[4])
       "NON SIGNIFICANT"
   }
   resultats$sign <- as.factor(apply(resultats, 1, classify.sign))
@@ -300,21 +299,21 @@ smwda<-function(comm.dist.mat,env.var,w.size=10,nrep=1000,probs=c(0.025,0.975)){
   if (nrow(comm.dist.mat)!=ncol(comm.dist.mat)) stop("comm.dist.mat needs to be a square matrix representing dissimilarity values between samples")
   ordre<-order(env.var)
   env.var<-env.var[ordre]
-  
+
   comm.dist.mat<-as.matrix(comm.dist.mat[ordre,ordre])
-  
+
   fun<-function(start,comm.dist.mat,w.size){
     tmp<-comm.dist.mat[start:(start+w.size-1),start:(start+w.size-1)]
     diag(tmp)<-NA
     tmp[upper.tri(tmp)]<-NA
     mean(tmp[(1+w.size/2):w.size,1:(w.size/2)])/mean(c(tmp[1:(w.size/2),1:(w.size/2)],tmp[(1+w.size/2):w.size,(1+w.size/2):w.size]),na.rm = T)
   }
-  
+
   rnd.fun<-function(comm.dist.mat,w.size){
     rnd.pos<-sample(1:nrow(comm.dist.mat),nrow(comm.dist.mat),replace=F)
     fun(1,comm.dist.mat=comm.dist.mat[rnd.pos,rnd.pos],w.size=w.size)
   }
-  
+
   stat.real<-sapply(starting.points,function(x){fun(x,comm.dist.mat=comm.dist.mat,w.size=w.size)})
   stat.real.zscore<-scale(stat.real,center = T,scale = T)
   stat.random<-replicate(nrep,rnd.fun(comm.dist.mat,w.size))
@@ -322,11 +321,11 @@ smwda<-function(comm.dist.mat,env.var,w.size=10,nrep=1000,probs=c(0.025,0.975)){
   env.var.min<-sapply(starting.points,function(x){min(env.var[x:(x+w.size-1)])})
   env.var.max<-sapply(starting.points,function(x){max(env.var[x:(x+w.size-1)])})
   sign<-sapply(stat.real,function(x){if (x>quantile(stat.random,probs=probs[2]) | x<quantile(stat.random,probs=probs[1])) "sign" else "N.S"})
-  
+
   window.sample.map<-sapply(starting.points,function(x){tmp<-rep(0,nrow(comm.dist.mat));tmp[x:(x+w.size-1)]<-1;t(tmp)})
   rownames(window.sample.map)<-rownames(comm.dist.mat)
   colnames(window.sample.map)<-paste("window",starting.points,sep="")
-  
+
   list(windows=data.frame(env.var.mean,env.var.min,env.var.max,stat.real,stat.real.zscore,sign,row.names = paste("window",starting.points,sep="")),random.quantiles=quantile(stat.random,probs=probs),random.mean=mean(stat.random),random.values=stat.random,window.sample.map=t(window.sample.map))
-  
+
 }
